@@ -6,7 +6,7 @@ steps:
       - '-t'
       - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPO/$_IMAGE_NAME:$COMMIT_SHA'
       - '--file'
-      - 'Dockerimage' # Dockerfileの名前が 'Dockerimage' のため
+      - 'Dockerfile' # Dockerfileの名前が 'Dockerfile' のため
       - '.'
 
   # ビルドしたイメージを Artifact Registry にプッシュします
