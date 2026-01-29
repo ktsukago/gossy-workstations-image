@@ -3,20 +3,25 @@ FROM asia-northeast1-docker.pkg.dev/cloud-workstations-images/predefined/code-os
 # Install system dependencies and Terraform
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Add Yarn GPG key to fix the repository signature verification error
-# Then, install system dependencies and Terraform
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+# =================================================================================
+#【重要】ここが修正点です: apt-keyを使わない新しい方式でGPGキーを登録します
+# =================================================================================
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    # Add Yarn GPG key using the recommended method
+    && curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /etc/apt/keyrings/yarnkey.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | tee /etc/apt/sources.list.d/yarn.list > /dev/null \
+    # Add HashiCorp GPG key using the recommended method
+    && curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /etc/apt/keyrings/hashicorp.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list > /dev/null \
+    # Update package lists again and install all required packages
     && apt-get update && apt-get install -y \
     python3-venv \
     make \
     jq \
-    gnupg \
     software-properties-common \
-    curl \
     asciinema \
-    && curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - \
-    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-    && apt-get update && apt-get install -y terraform \
+    terraform \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
