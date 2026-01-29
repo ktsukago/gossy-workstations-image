@@ -4,9 +4,12 @@ FROM asia-northeast1-docker.pkg.dev/cloud-workstations-images/predefined/code-os
 ENV DEBIAN_FRONTEND=noninteractive
 
 # =================================================================================
-#【重要】ここが修正点です: apt-keyを使わない新しい方式でGPGキーを登録します
+#【最終修正】
+# 1. ベースイメージに含まれる、壊れたYarnのリポジトリ設定を最初に削除します。
+# 2. その後、正しい設定でYarnとHashiCorpのリポジトリを再追加します。
 # =================================================================================
-RUN apt-get update && apt-get install -y ca-certificates curl gnupg \
+RUN rm -f /etc/apt/sources.list.d/yarn.list \
+    && apt-get update && apt-get install -y ca-certificates curl gnupg \
     && mkdir -p /etc/apt/keyrings \
     # Add Yarn GPG key using the recommended method
     && curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /etc/apt/keyrings/yarnkey.gpg \
