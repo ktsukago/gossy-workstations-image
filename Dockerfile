@@ -2,7 +2,11 @@ FROM asia-northeast1-docker.pkg.dev/cloud-workstations-images/predefined/code-os
 
 # Install system dependencies and Terraform
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y \
+
+# Add Yarn GPG key to fix the repository signature verification error
+# Then, install system dependencies and Terraform
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && apt-get update && apt-get install -y \
     python3-venv \
     make \
     jq \
@@ -49,4 +53,3 @@ RUN mkdir -p /tmp/extensions \
     && rm -rf extension hashicorp.terraform-2.34.5@linux-x64.vsix \
     && cd / \
     && rmdir /tmp/extensions
-
